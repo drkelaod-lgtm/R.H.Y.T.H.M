@@ -42,11 +42,14 @@
             border-left: 2px dashed #b91c1c;
             z-index: 10;
         }
+        /* Custom scrollbar for the log list */
+        .log-container::-webkit-scrollbar { width: 6px; }
+        .log-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
-<body class="bg-gray-50 p-4 md:p-8 relative min-h-screen">
+<body class="bg-gray-50 p-4 md:p-8 relative min-h-screen" onload="loadLogs()">
 
-    <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 mb-10">
+    <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 mb-24 relative">
         <div class="bg-blue-600 p-6 text-white text-center">
             <img src="https://kelechiwilliams2k7.wordpress.com/wp-content/uploads/2026/06/ask-our-doctor-logo.png" class="h-16 md:h-18 w-auto mx-auto mb-4 object-contain" alt="Ask Our Doctor Logo">
             <h2 class="text-2xl font-bold mb-2">The R.H.Y.T.H.M. Threshold Simulator</h2>
@@ -92,9 +95,9 @@
 
                 <div>
                     <div class="flex justify-between text-sm font-medium text-gray-700 mb-1 items-center">
-                        <span><strong class="text-blue-600">R</strong>outine (Meals &amp; Rest Breaks)</span>
+                        <span><strong class="text-blue-600">R</strong>outine (Meals &amp; Breaks)</span>
                         <div class="flex items-center gap-2">
-                            <button id="btnEat" onclick="logMeal()" title="Tap after eating a proper meal to reset your routine timer." class="hidden text-[10px] px-2 py-1 rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors font-bold tracking-wider shadow-sm cursor-pointer">🍽️ LOG MEAL</button>
+                            <button id="btnEat" onclick="logMeal()" class="hidden text-[10px] px-2 py-1 rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors font-bold tracking-wider shadow-sm cursor-pointer">🍽️ LOG MEAL</button>
                             <button id="btnAutoMeals" onclick="toggleAutoMeals()" class="text-[10px] px-2 py-1 rounded border border-gray-300 bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors font-bold tracking-wider uppercase shadow-sm cursor-pointer">Auto</button>
                             <span id="valR" class="text-gray-500 w-24 text-right">Perfect</span>
                         </div>
@@ -110,7 +113,7 @@
                     <div class="flex justify-between text-sm font-medium text-gray-700 mb-1 items-center">
                         <span><strong class="text-blue-600">H</strong>ydration (3.7L Daily Goal)</span>
                         <div class="flex items-center gap-2">
-                            <button id="btnDrink" onclick="drinkWater()" title="Drink 1 full glass (250ml) of water before clicking this to reset your hydration." class="hidden text-[10px] px-2 py-1 rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors font-bold tracking-wider shadow-sm cursor-pointer">💧 DRINK 1 GLASS</button>
+                            <button id="btnDrink" onclick="drinkWater()" class="hidden text-[10px] px-2 py-1 rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors font-bold tracking-wider shadow-sm cursor-pointer">💧 DRINK 1 GLASS</button>
                             <button id="btnAutoHydration" onclick="toggleAutoHydration()" class="text-[10px] px-2 py-1 rounded border border-gray-300 bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors font-bold tracking-wider uppercase shadow-sm cursor-pointer">Auto</button>
                             <span id="valH" class="text-gray-500 w-24 text-right">Optimal</span>
                         </div>
@@ -123,11 +126,14 @@
                 </div>
 
                 <div>
-                    <div class="flex justify-between text-sm font-medium text-gray-700 mb-1">
+                    <div class="flex justify-between text-sm font-medium text-gray-700 mb-1 items-center">
                         <span><strong class="text-blue-600">T</strong>ension (Stress/Posture)</span>
-                        <span id="valT" class="text-gray-500">Relaxed</span>
+                        <div class="flex items-center gap-2">
+                            <button id="btnAutoTension" onclick="toggleAutoTension()" class="text-[10px] px-2 py-1 rounded border border-gray-300 bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors font-bold tracking-wider uppercase shadow-sm cursor-pointer" title="Auto-detects unbroken screen time for Tech Neck">Auto</button>
+                            <span id="valT" class="text-gray-500 w-24 text-right">Relaxed</span>
+                        </div>
                     </div>
-                    <input type="range" id="slideT" min="0" max="20" value="0" class="w-full" oninput="calculateThreshold()">
+                    <input type="range" id="slideT" min="0" max="20" value="0" class="w-full" oninput="manualOverride('slideT'); calculateThreshold()">
                     <div class="flex justify-between text-xs text-gray-400 mt-1">
                         <span>Relaxed / Good Posture</span>
                         <span>High Stress / "Tech Neck"</span>
@@ -138,7 +144,7 @@
                     <div class="flex justify-between text-sm font-medium text-gray-700 mb-1 items-center">
                         <span><strong class="text-blue-600">H</strong>ealthy Pacing</span>
                         <div class="flex items-center gap-2">
-                            <button id="btnAutoMotion" onclick="toggleAutoMotion()" class="text-[10px] px-2 py-1 rounded border border-gray-300 bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors font-bold tracking-wider uppercase shadow-sm cursor-pointer">Auto</button>
+                            <button id="btnAutoMotion" onclick="toggleAutoMotion()" class="text-[10px] px-2 py-1 rounded border border-gray-300 bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors font-bold tracking-wider uppercase shadow-sm cursor-pointer" title="Auto-detects frantic scrolling and device movement">Auto</button>
                             <span id="valP" class="text-gray-500 w-24 text-right">Paced</span>
                         </div>
                     </div>
@@ -166,6 +172,49 @@
 
             </div>
 
+            <div class="mt-10 bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                <h3 class="text-xl font-bold text-gray-800 mb-2 border-b pb-2 flex items-center">
+                    <span class="mr-2">📝</span> Your Triggers (The Migraine Log)
+                </h3>
+                <p class="text-xs text-gray-500 mb-4">Keep a detailed log to help us pinpoint your specific individual triggers. Find your specific enemies. This data stays private on your device.</p>
+                
+                <form id="logForm" onsubmit="saveLog(event)" class="space-y-4 text-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Date & Time of Onset</label>
+                            <input type="datetime-local" id="logDate" required class="w-full border border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Severity (1 to 10)</label>
+                            <div class="flex items-center gap-2">
+                                <input type="range" id="logSeverity" min="1" max="10" value="5" class="w-full" oninput="document.getElementById('sevVal').innerText=this.value">
+                                <span id="sevVal" class="font-bold text-red-600 w-6 text-center">5</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block font-bold text-gray-700 mb-1">24-Hour History</label>
+                        <textarea id="logHistory" rows="3" placeholder="List all food, drinks, and activities undertaken 24 hours prior..." required class="w-full border border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-gray-700 mb-1">Environment / Biology</label>
+                        <input type="text" id="logEnvironment" placeholder="Any weather changes or specific menstrual cycle dates?" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <button type="submit" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded shadow transition-colors">
+                        Save to Log
+                    </button>
+                </form>
+
+                <div class="mt-6 border-t pt-4">
+                    <h4 class="font-bold text-gray-700 mb-3">Saved History</h4>
+                    <div id="logList" class="space-y-3 max-h-60 overflow-y-auto log-container pr-2">
+                        </div>
+                </div>
+            </div>
+
             <div class="mt-10 bg-blue-50 rounded-2xl p-6 md:p-8 border border-blue-100">
                 <div class="text-center mb-6">
                     <h3 class="text-xl font-bold text-blue-900 mb-2">Book Your Stabilization Consult</h3>
@@ -187,7 +236,6 @@
 
                 <div class="text-center">
                     <p class="font-bold text-gray-800 mb-4">Step 2: Send your receipt to schedule your time</p>
-                    
                     <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
                         <a href="https://wa.me/2349059645425?text=Hello%20Dr.%20Kelechi,%20I%20just%20used%20your%20Simulator.%20I%20have%20made%20my%20payment%20and%20would%20like%20to%20book%20my%20consultation.%20Here%20is%20my%20receipt:" target="_blank" onclick="stopCriticalAlarm()" class="w-full sm:w-auto inline-flex items-center justify-center bg-[#25D366] hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-200 transform hover:scale-105">
                             <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
@@ -203,43 +251,35 @@
         </div>
     </div>
 
+    <div class="fixed bottom-6 right-6 flex flex-col gap-3 z-[100]">
+        <a href="https://m.me/aodconcept" target="_blank" class="bg-[#0084FF] text-white p-4 rounded-full shadow-2xl hover:bg-blue-600 transition-transform transform hover:scale-110 flex items-center justify-center" title="Chat on Messenger">
+            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.654V24l4.088-2.242c1.092.3 2.246.464 3.443.464 6.627 0 12-4.975 12-11.111C24 4.974 18.627 0 12 0zm1.191 14.963l-3.056-3.26-5.963 3.26 6.559-6.963 3.13 3.26 5.888-3.26-6.558 6.963z"/></svg>
+        </a>
+        <a href="https://wa.me/2349059645425" target="_blank" class="bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:bg-green-600 transition-transform transform hover:scale-110 flex items-center justify-center" title="Chat on WhatsApp">
+            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        </a>
+    </div>
+
     <script>
         let currentZone = 'green';
         let audioCtx;
         let criticalAlarmInterval = null;
 
-        // Auto Toggles
+        // Toggles
         let isAutoEnvironment = false, isAutoPacing = false, isAutoHydration = false;
-        let isAutoSleep = false, isAutoMeals = false;
+        let isAutoSleep = false, isAutoMeals = false, isAutoTension = false;
 
-        // Environment & Motion
+        // Variables
         let micAudioCtx, audioStream;
         let motionAccumulator = 0, motionReadings = 0, motionInterval = null;
+        let lastMouseY = 0, lastScrollY = 0; // For pacing
+        let lastInteractionTime = Date.now(), tensionInterval = null; // For Tension
+        let hydrationInterval = null, lastDrinkTime = Date.now(), needsDrinkPrompt = false;
+        let sleepInterval = null, lastWakeTime = Date.now(), needsSleepPrompt = false;
+        let mealInterval = null, lastMealTime = Date.now(), needsMealPrompt = false;
 
-        // Hydration Logic
-        let hydrationInterval = null;
-        let lastDrinkTime = Date.now();
-        let needsDrinkPrompt = false;
-        const TARGET_INTERVAL_MINS = 65; 
-
-        // Sleep Logic
-        let sleepInterval = null;
-        let lastWakeTime = Date.now();
-        let needsSleepPrompt = false;
-        const AWAKE_TARGET_MINS = 16 * 60; // 16 hours awake
-
-        // Meals Logic
-        let mealInterval = null;
-        let lastMealTime = Date.now();
-        let needsMealPrompt = false;
-        const MEAL_INTERVAL_MINS = 240; 
-
-        function showError(msg) {
-            const statusAlert = document.getElementById('statusAlert');
-            statusAlert.className = 'mb-8 p-4 rounded-lg bg-red-100 border border-red-300 text-red-900 text-center text-sm font-bold transition-colors duration-300';
-            statusAlert.innerHTML = `⚠️ ${msg}`;
-            setTimeout(() => calculateThreshold(), 3500);
-        }
+        // Set default datetime to now for log
+        document.getElementById('logDate').value = new Date().toISOString().slice(0, 16);
 
         function manualOverride(id) {
             if (id === 'slideM' && isAutoEnvironment) toggleAutoNoise();
@@ -247,9 +287,175 @@
             if (id === 'slideH' && isAutoHydration) toggleAutoHydration();
             if (id === 'slideS' && isAutoSleep) toggleAutoSleep();
             if (id === 'slideR' && isAutoMeals) toggleAutoMeals();
+            if (id === 'slideT' && isAutoTension) toggleAutoTension();
         }
 
-        // --- SMART SLEEP AUTO (Pop-up removed) ---
+        // --- MIGRAINE LOG LOGIC ---
+        function saveLog(e) {
+            e.preventDefault();
+            const log = {
+                id: Date.now(),
+                date: document.getElementById('logDate').value,
+                severity: document.getElementById('logSeverity').value,
+                history: document.getElementById('logHistory').value,
+                environment: document.getElementById('logEnvironment').value
+            };
+            let logs = JSON.parse(localStorage.getItem('migraineLogs') || '[]');
+            logs.unshift(log); // Add to top
+            localStorage.setItem('migraineLogs', JSON.stringify(logs));
+            document.getElementById('logForm').reset();
+            document.getElementById('sevVal').innerText = '5';
+            document.getElementById('logDate').value = new Date().toISOString().slice(0, 16);
+            loadLogs();
+            alert("Trigger saved securely to your device.");
+        }
+
+        function loadLogs() {
+            const list = document.getElementById('logList');
+            let logs = JSON.parse(localStorage.getItem('migraineLogs') || '[]');
+            if (logs.length === 0) {
+                list.innerHTML = '<p class="text-xs text-gray-400 italic">No logs saved yet.</p>';
+                return;
+            }
+            list.innerHTML = logs.map(log => {
+                const d = new Date(log.date).toLocaleString();
+                const color = log.severity > 7 ? 'text-red-600' : (log.severity > 4 ? 'text-yellow-600' : 'text-green-600');
+                return `
+                <div class="bg-gray-50 p-3 rounded border border-gray-100 relative group">
+                    <button onclick="deleteLog(${log.id})" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-xs hidden group-hover:block">Delete</button>
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-bold text-gray-700">${d}</span>
+                        <span class="text-xs font-black ${color}">Severity: ${log.severity}/10</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-1"><strong class="text-gray-800">24h History:</strong> ${log.history}</p>
+                    ${log.environment ? `<p class="text-xs text-gray-600 mt-1"><strong class="text-gray-800">Environment/Cycle:</strong> ${log.environment}</p>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        function deleteLog(id) {
+            if(confirm("Delete this log?")) {
+                let logs = JSON.parse(localStorage.getItem('migraineLogs') || '[]');
+                logs = logs.filter(l => l.id !== id);
+                localStorage.setItem('migraineLogs', JSON.stringify(logs));
+                loadLogs();
+            }
+        }
+
+        // --- NEW TENSION AUTO (Screen-Time/Posture Tracker) ---
+        function toggleAutoTension() {
+            const btn = document.getElementById('btnAutoTension');
+            if (isAutoTension) {
+                isAutoTension = false;
+                btn.classList.replace('bg-blue-600', 'bg-gray-200');
+                btn.classList.replace('text-white', 'text-gray-600');
+                btn.innerText = 'Auto';
+                if (tensionInterval) clearInterval(tensionInterval);
+                window.removeEventListener('focus', resetTensionTimer);
+                window.removeEventListener('blur', resetTensionTimer);
+                return;
+            }
+            isAutoTension = true;
+            btn.classList.replace('bg-gray-200', 'bg-blue-600');
+            btn.classList.replace('text-gray-600', 'text-white');
+            btn.innerText = 'Auto ON';
+            
+            lastInteractionTime = Date.now();
+            
+            // If they click away from the page, they are "taking a break"
+            window.addEventListener('blur', resetTensionTimer);
+            window.addEventListener('focus', resetTensionTimer);
+
+            tensionInterval = setInterval(() => {
+                if (!isAutoTension) return;
+                // If active on screen without looking away for > 20 mins, tension rises
+                let elapsed = (Date.now() - lastInteractionTime) / 60000;
+                let sliderVal = Math.min(20, Math.floor((elapsed / 30) * 20)); // Max tension at 30 mins unbroken screen time
+                
+                const s = document.getElementById('slideT');
+                if (parseInt(s.value) < sliderVal) { // Only go up
+                    s.value = sliderVal;
+                    calculateThreshold();
+                }
+            }, 5000);
+        }
+
+        function resetTensionTimer() {
+            if (isAutoTension) {
+                lastInteractionTime = Date.now(); // Posture break taken
+                const s = document.getElementById('slideT');
+                if(parseInt(s.value) > 0) {
+                    s.value = Math.max(0, parseInt(s.value) - 5); // Reduce tension on break
+                    calculateThreshold();
+                }
+            }
+        }
+
+        // --- UPDATED PACING AUTO (Frantic Interaction Tracker) ---
+        function toggleAutoMotion() {
+            const btn = document.getElementById('btnAutoMotion');
+            if (isAutoPacing) {
+                isAutoPacing = false;
+                btn.classList.replace('bg-blue-600', 'bg-gray-200');
+                btn.classList.replace('text-white', 'text-gray-600');
+                btn.innerText = 'Auto';
+                window.removeEventListener('mousemove', trackMouseSpeed);
+                window.removeEventListener('scroll', trackScrollSpeed);
+                if (motionInterval) clearInterval(motionInterval);
+                return;
+            }
+            
+            isAutoPacing = true;
+            motionAccumulator = 0;
+            motionReadings = 0;
+            btn.classList.replace('bg-gray-200', 'bg-blue-600');
+            btn.classList.replace('text-gray-600', 'text-white');
+            btn.innerText = 'Auto ON';
+            
+            // Desktop/Web tracking: erratic mouse and scroll speed
+            window.addEventListener('mousemove', trackMouseSpeed);
+            window.addEventListener('scroll', trackScrollSpeed);
+            
+            motionInterval = setInterval(() => {
+                if (!isAutoPacing) return;
+                let avg = motionReadings > 0 ? (motionAccumulator / motionReadings) : 0;
+                let sliderVal = Math.min(20, Math.floor((avg / 50) * 20)); // Normalized for pixel speed
+                
+                const s = document.getElementById('slideP');
+                // Smooth fallback if no motion
+                if(sliderVal === 0 && parseInt(s.value) > 0) {
+                    s.value = parseInt(s.value) - 1;
+                } else {
+                    s.value = sliderVal;
+                }
+                calculateThreshold();
+                
+                motionAccumulator = 0;
+                motionReadings = 0;
+            }, 1000);
+        }
+
+        function trackMouseSpeed(e) {
+            if (!isAutoPacing) return;
+            let speed = Math.abs(e.movementY) + Math.abs(e.movementX);
+            if (speed > 5) { // Filter micro-movements
+                motionAccumulator += speed;
+                motionReadings++;
+            }
+        }
+
+        function trackScrollSpeed() {
+            if (!isAutoPacing) return;
+            let speed = Math.abs(window.scrollY - lastScrollY);
+            lastScrollY = window.scrollY;
+            if (speed > 10) {
+                motionAccumulator += speed;
+                motionReadings++;
+            }
+        }
+
+
+        // --- EXISTING AUTOS (Sleep, Meal, Hydration, Noise) ---
         function toggleAutoSleep() {
             const btn = document.getElementById('btnAutoSleep');
             if (isAutoSleep) {
@@ -259,58 +465,37 @@
                 btn.innerText = 'Auto';
                 document.getElementById('btnSleep').classList.add('hidden');
                 if (sleepInterval) clearInterval(sleepInterval);
-                sleepInterval = null;
                 return;
             }
-
             isAutoSleep = true;
             btn.classList.replace('bg-gray-200', 'bg-blue-600');
             btn.classList.replace('text-gray-600', 'text-white');
             btn.innerText = 'Auto ON';
             document.getElementById('btnSleep').classList.remove('hidden');
 
-            let currentVal = parseInt(document.getElementById('slideS').value);
-            let maxOvertimeMins = 8 * 60; // 8 hours of degradation after 16 hours awake
-            
-            // Sync current slider position to an exact timestamp
-            lastWakeTime = Date.now() - ((currentVal / 20) * maxOvertimeMins * 60000);
-            if (currentVal > 0) {
-                lastWakeTime -= (AWAKE_TARGET_MINS * 60000); 
-            }
+            lastWakeTime = Date.now() - ((parseInt(document.getElementById('slideS').value) / 20) * 8 * 60000);
             needsSleepPrompt = false;
 
             sleepInterval = setInterval(() => {
                 if (!isAutoSleep) return;
                 let elapsedMins = (Date.now() - lastWakeTime) / 60000;
-                
-                if (elapsedMins >= AWAKE_TARGET_MINS && !needsSleepPrompt) {
-                    needsSleepPrompt = true;
-                    alert("💤 Sleep Reminder: You have been awake for over 16 hours. Your brain needs rest to recover!");
-                }
-
                 let newVal = 0;
-                if (elapsedMins > AWAKE_TARGET_MINS) {
-                    let overtime = elapsedMins - AWAKE_TARGET_MINS;
-                    newVal = Math.min(20, Math.floor((overtime / maxOvertimeMins) * 20));
+                if (elapsedMins > 16 * 60) {
+                    let overtime = elapsedMins - (16 * 60);
+                    newVal = Math.min(20, Math.floor((overtime / (8 * 60)) * 20));
                 }
-                
                 const s = document.getElementById('slideS');
-                if (parseInt(s.value) !== newVal) {
-                    s.value = newVal;
-                    calculateThreshold();
-                }
+                if (parseInt(s.value) !== newVal) { s.value = newVal; calculateThreshold(); }
             }, 10000); 
         }
 
         function logSleep() {
             if (!isAutoSleep) return;
             lastWakeTime = Date.now();
-            needsSleepPrompt = false;
             document.getElementById('slideS').value = 0;
             calculateThreshold();
         }
 
-        // --- MEALS AUTO ---
         function toggleAutoMeals() {
             const btn = document.getElementById('btnAutoMeals');
             if (isAutoMeals) {
@@ -320,48 +505,33 @@
                 btn.innerText = 'Auto';
                 document.getElementById('btnEat').classList.add('hidden');
                 if (mealInterval) clearInterval(mealInterval);
-                mealInterval = null;
                 return;
             }
-
             isAutoMeals = true;
             btn.classList.replace('bg-gray-200', 'bg-blue-600');
             btn.classList.replace('text-gray-600', 'text-white');
             btn.innerText = 'Auto ON';
             document.getElementById('btnEat').classList.remove('hidden');
 
-            let currentVal = parseInt(document.getElementById('slideR').value);
-            let maxMins = MEAL_INTERVAL_MINS * 3; 
-            lastMealTime = Date.now() - ((currentVal / 20) * maxMins * 60000);
-            needsMealPrompt = false;
+            let maxMins = 240 * 3; 
+            lastMealTime = Date.now() - ((parseInt(document.getElementById('slideR').value) / 20) * maxMins * 60000);
 
             mealInterval = setInterval(() => {
                 if (!isAutoMeals) return;
                 let elapsed = (Date.now() - lastMealTime) / 60000;
-
-                if (elapsed >= MEAL_INTERVAL_MINS && !needsMealPrompt) {
-                    needsMealPrompt = true;
-                    alert("🍽️ Meal Reminder: It has been about 4 hours. Time to eat a proper meal or take a rest break to protect your threshold!");
-                }
-
                 let newVal = Math.min(20, Math.floor((elapsed / maxMins) * 20));
                 const s = document.getElementById('slideR');
-                if (parseInt(s.value) !== newVal) {
-                    s.value = newVal;
-                    calculateThreshold();
-                }
+                if (parseInt(s.value) !== newVal) { s.value = newVal; calculateThreshold(); }
             }, 10000);
         }
 
         function logMeal() {
             if (!isAutoMeals) return;
             lastMealTime = Date.now();
-            needsMealPrompt = false;
             document.getElementById('slideR').value = 0;
             calculateThreshold();
         }
 
-        // --- HYDRATION AUTO ---
         function toggleAutoHydration() {
             const btn = document.getElementById('btnAutoHydration');
             if (isAutoHydration) {
@@ -371,7 +541,6 @@
                 btn.innerText = 'Auto';
                 document.getElementById('btnDrink').classList.add('hidden');
                 if (hydrationInterval) clearInterval(hydrationInterval);
-                hydrationInterval = null;
                 return;
             }
             isAutoHydration = true;
@@ -380,36 +549,25 @@
             btn.innerText = 'Auto ON';
             document.getElementById('btnDrink').classList.remove('hidden');
 
-            let currentSliderVal = parseInt(document.getElementById('slideH').value);
-            let maxMinutesToDehydration = TARGET_INTERVAL_MINS * 3;
-            lastDrinkTime = Date.now() - ((currentSliderVal / 20) * maxMinutesToDehydration * 60000);
-            needsDrinkPrompt = false;
+            let maxMinutesToDehydration = 65 * 3;
+            lastDrinkTime = Date.now() - ((parseInt(document.getElementById('slideH').value) / 20) * maxMinutesToDehydration * 60000);
 
             hydrationInterval = setInterval(() => {
                 if (!isAutoHydration) return;
                 let elapsedMinutes = (Date.now() - lastDrinkTime) / 60000;
-                if (elapsedMinutes >= TARGET_INTERVAL_MINS && !needsDrinkPrompt) {
-                    needsDrinkPrompt = true;
-                    alert("💧 Hydration Check: It has been about an hour. Drink 250ml of water now to stay on track for your 3.7L daily goal!");
-                }
                 let newLevel = Math.min(20, Math.floor((elapsedMinutes / maxMinutesToDehydration) * 20));
                 const s = document.getElementById('slideH');
-                if (parseInt(s.value) !== newLevel) {
-                    s.value = newLevel;
-                    calculateThreshold();
-                }
+                if (parseInt(s.value) !== newLevel) { s.value = newLevel; calculateThreshold(); }
             }, 10000);
         }
 
         function drinkWater() {
             if (!isAutoHydration) return;
             lastDrinkTime = Date.now();
-            needsDrinkPrompt = false;
             document.getElementById('slideH').value = 0;
             calculateThreshold();
         }
 
-        // --- ENVIRONMENT AUTO ---
         async function toggleAutoNoise() {
             const btn = document.getElementById('btnAutoNoise');
             if (isAutoEnvironment) {
@@ -444,70 +602,13 @@
             } catch (err) { showError("Microphone access denied."); }
         }
 
-        // --- PACING AUTO ---
-        async function toggleAutoMotion() {
-            const btn = document.getElementById('btnAutoMotion');
-            if (isAutoPacing) {
-                isAutoPacing = false;
-                btn.classList.replace('bg-blue-600', 'bg-gray-200');
-                btn.classList.replace('text-white', 'text-gray-600');
-                btn.innerText = 'Auto';
-                window.removeEventListener('devicemotion', handleMotion);
-                if (motionInterval) clearInterval(motionInterval);
-                motionInterval = null;
-                return;
-            }
-            if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-                try {
-                    const permission = await DeviceMotionEvent.requestPermission();
-                    if (permission !== 'granted') throw new Error();
-                } catch (e) { showError("Motion sensor access denied."); return; }
-            }
-            if (typeof DeviceMotionEvent === 'undefined') {
-                showError("Motion sensor not available on this device.");
-                return;
-            }
-            isAutoPacing = true;
-            motionAccumulator = 0;
-            motionReadings = 0;
-            btn.classList.replace('bg-gray-200', 'bg-blue-600');
-            btn.classList.replace('text-gray-600', 'text-white');
-            btn.innerText = 'Auto ON';
-            window.addEventListener('devicemotion', handleMotion);
-            motionInterval = setInterval(() => {
-                if (!isAutoPacing) return;
-                let avg = motionReadings > 0 ? (motionAccumulator / motionReadings) : 0;
-                let sliderVal = Math.min(20, Math.floor((avg / 10) * 20));
-                document.getElementById('slideP').value = sliderVal;
-                calculateThreshold();
-                motionAccumulator = 0;
-                motionReadings = 0;
-            }, 1000);
-        }
-
-        function handleMotion(event) {
-            if (!isAutoPacing) return;
-            let acc = event.acceleration || event.accelerationIncludingGravity;
-            if (acc) {
-                let mag = Math.sqrt((acc.x || 0) ** 2 + (acc.y || 0) ** 2 + (acc.z || 0) ** 2);
-                motionAccumulator += event.acceleration ? mag : Math.abs(mag - 9.8);
-                motionReadings++;
-            }
-        }
-
-        // --- ALARMS ---
+        // --- CALCULATION & ALARMS ---
         function startCriticalAlarm() {
-            if (!criticalAlarmInterval) {
-                playAlarm('critical');
-                criticalAlarmInterval = setInterval(() => playAlarm('critical'), 1000);
-            }
+            if (!criticalAlarmInterval) { playAlarm('critical'); criticalAlarmInterval = setInterval(() => playAlarm('critical'), 1000); }
         }
 
         function stopCriticalAlarm() {
-            if (criticalAlarmInterval) {
-                clearInterval(criticalAlarmInterval);
-                criticalAlarmInterval = null;
-            }
+            if (criticalAlarmInterval) { clearInterval(criticalAlarmInterval); criticalAlarmInterval = null; }
         }
 
         function playAlarm(type) {
@@ -531,7 +632,6 @@
             }
         }
 
-        // --- MAIN CALCULATION ---
         function calculateThreshold() {
             const s = parseInt(document.getElementById('slideS').value),
                   r = parseInt(document.getElementById('slideR').value),
@@ -562,7 +662,7 @@
             }
 
             const sA = document.getElementById('statusAlert');
-            if (!sA.innerHTML.includes('⚠️ Microphone') && !sA.innerHTML.includes('⚠️ Motion') && !sA.innerHTML.includes('⚠️ Invalid')) {
+            if (!sA.innerHTML.includes('⚠️')) {
                 if (percentage >= 70) {
                     document.getElementById('meterBar').className = 'h-full bg-red-500 transition-all duration-500 ease-in-out';
                     sA.className = 'mb-8 p-4 rounded-lg bg-red-50 border border-red-200 text-red-800 text-center text-lg font-extrabold transition-colors duration-300 animate-pulse';
