@@ -1,0 +1,383 @@
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R.H.Y.T.H.M. Threshold Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom slider styling for a premium medical feel */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #2563eb;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: background-color 0.3s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            background: #1d4ed8;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #e5e7eb;
+            border-radius: 4px;
+        }
+        .threshold-line {
+            position: absolute;
+            left: 70%;
+            top: -10px;
+            bottom: -10px;
+            width: 2px;
+            background-color: #ef4444;
+            border-left: 2px dashed #b91c1c;
+            z-index: 10;
+        }
+    </style>
+
+
+
+    <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+        <!-- Header -->
+        <div class="bg-blue-600 p-6 text-white text-center">
+            <!-- Brand Logo -->
+            <img src="https://kelechiwilliams2k7.wordpress.com/wp-content/uploads/2026/06/ask-our-doctor-logo.png" class="h-16 md:h-18 w-auto mx-auto mb-4 object-contain" alt="Ask Our Doctor Logo">
+            
+            <h2 class="text-2xl font-bold mb-2">The R.H.Y.T.H.M. Threshold Simulator</h2>
+            <p class="text-blue-100 text-sm">Developed by Dr. Kelechi | Ask Our Doctor</p>
+        </div>
+
+        <div class="p-6 md:p-8">
+            <p class="text-gray-600 mb-6 text-sm text-center">Adjust the sliders below to see how your daily lifestyle choices stack up and affect your neurological threshold.</p>
+
+            <!-- Visual Meter -->
+            <div class="mb-10 relative">
+                <div class="flex justify-between text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">
+                    <span>Protected Zone</span>
+                    <span class="text-red-500">Danger Zone</span>
+                </div>
+                <div class="relative h-10 bg-gray-200 rounded-full overflow-hidden shadow-inner">
+                    <div id="meterBar" class="h-full bg-green-500 transition-all duration-500 ease-in-out w-[10%]"></div>
+                    <div class="threshold-line"></div>
+                </div>
+                <div class="absolute left-[70%] -top-6 text-xs font-bold text-red-600 -translate-x-1/2">Migraine Threshold</div>
+            </div>
+
+            <!-- Status Message -->
+            <div id="statusAlert" class="mb-8 p-4 rounded-lg bg-green-50 border border-green-200 text-green-800 text-center text-sm font-medium transition-colors duration-300">
+                Your brain is currently in the protected zone. Keep up the good R.H.Y.T.H.M.!
+            </div>
+
+            <!-- Sliders -->
+            <div class="space-y-6">
+                <!-- Routine -->
+                <div>
+                    <div class="flex justify-between text-sm font-medium text-gray-700 mb-1">
+                        <span><strong class="text-blue-600">R</strong>outine (Sleep/Meals)</span>
+                        <span id="valR" class="text-gray-500">Perfect</span>
+                    </div>
+                    <input type="range" id="slideR" min="0" max="20" value="0" class="w-full" oninput="calculateThreshold()">
+                    <div class="flex justify-between text-xs text-gray-400 mt-1">
+                        <span>Strict Schedule</span>
+                        <span>Skipping Meals/Erratic Sleep</span>
+                    </div>
+                </div>
+
+                <!-- Hydration -->
+                <div>
+                    <div class="flex justify-between text-sm font-medium text-gray-700 mb-1 items-center">
+                        <span><strong class="text-blue-600">H</strong>ydration</span>
+                        <div class="flex items-center gap-2">
+                            <button id="btnDrink" onclick="drinkWater()" title="Drink 1 full glass (250ml) of water before clicking this to reset your hydration." class="hidden text-[10px] px-2 py-1 rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors font-bold tracking-wider shadow-sm">💧 DRINK 1 GLASS (250ml)</button>
+                            <button id="btnAutoHydration" onclick="toggleAutoHydration()" class="text-[10px] px-2 py-1 rounded border border-gray-300 bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors font-bold tracking-wider uppercase shadow-sm">Auto</button>
+                            <span id="valH" class="text-gray-500 w-24 text-right">Optimal</span>
+                        </div>
+                    </div>
+                    <input type="range" id="slideH" min="0" max="20" value="0" class="w-full" oninput="manualOverride('slideH'); calculateThreshold()">
+                    <div class="flex justify-between text-xs text-gray-400 mt-1">
+                        <span>Well Hydrated</span>
+                        <span>Dehydrated</span>
+                    </div>
+                </div>
+
+                <!-- Tension -->
+                <div>
+                    <div class="flex justify-between text-sm font-medium text-gray-700 mb-1">
+                        <span><strong class="text-blue-600">T</strong>ension (Stress/Posture)</span>
+                        <span id="valT" class="text-gray-500">Relaxed</span>
+                    </div>
+                    <input type="range" id="slideT" min="0" max="20" value="0" class="w-full" oninput="calculateThreshold()">
+                    <div class="flex justify-between text-xs text-gray-400 mt-1">
+                        <span>Relaxed / Good Posture</span>
+                        <span>High Stress / "Tech Neck"</span>
+                    </div>
+                </div>
+
+                <!-- Healthy Pacing -->
+                <div>
+                    <div class="flex justify-between text-sm font-medium text-gray-700 mb-1 items-center">
+                        <span><strong class="text-blue-600">H</strong>ealthy Pacing</span>
+                        <div class="flex items-center gap-2">
+                            <button id="btnAutoMotion" onclick="toggleAutoMotion()" class="text-[10px] px-2 py-1 rounded border border-gray-300 bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors font-bold tracking-wider uppercase shadow-sm">Auto</button>
+                            <span id="valP" class="text-gray-500 w-24 text-right">Paced</span>
+                        </div>
+                    </div>
+                    <input type="range" id="slideP" min="0" max="20" value="0" class="w-full" oninput="manualOverride('slideP'); calculateThreshold()">
+                    <div class="flex justify-between text-xs text-gray-400 mt-1">
+                        <span>Moderate/Paced</span>
+                        <span>Sudden Overexertion</span>
+                    </div>
+                </div>
+
+                <!-- Mute Environment -->
+                <div>
+                    <div class="flex justify-between text-sm font-medium text-gray-700 mb-1 items-center">
+                        <span><strong class="text-blue-600">M</strong>ute Environment</span>
+                        <div class="flex items-center gap-2">
+                            <button id="btnAutoNoise" onclick="toggleAutoNoise()" class="text-[10px] px-2 py-1 rounded border border-gray-300 bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors font-bold tracking-wider uppercase shadow-sm">Auto</button>
+                            <span id="valM" class="text-gray-500 w-24 text-right">Protected</span>
+                        </div>
+                    </div>
+                    <input type="range" id="slideM" min="0" max="20" value="0" class="w-full" oninput="manualOverride('slideM'); calculateThreshold()">
+                    <div class="flex justify-between text-xs text-gray-400 mt-1">
+                        <span>Protected/Muted</span>
+                        <span>Harsh Lights/Loud Sounds</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment and CTA Section -->
+            <div class="mt-10 bg-blue-50 rounded-2xl p-6 md:p-8 border border-blue-100">
+                <div class="text-center mb-6">
+                    <h3 class="text-xl font-bold text-blue-900 mb-2">Book Your Stabilization Consult</h3>
+                    <p class="text-sm text-blue-800">Get a personalized R.H.Y.T.H.M. management plan directly from Dr. Kelechi.</p>
+                    <div class="mt-4 inline-block bg-white px-6 py-2 rounded-full border border-blue-200 shadow-sm">
+                        <span class="text-gray-500 text-sm uppercase tracking-wider font-bold mr-2">Consultation Fee:</span>
+                        <span class="text-xl font-extrabold text-blue-600">₦5,000</span>
+                    </div>
+                </div>
+
+                <!-- Payment Details -->
+                <div class="bg-white rounded-xl p-5 mb-6 shadow-sm border border-gray-100 text-sm">
+                    <p class="font-bold text-gray-800 mb-3 border-b pb-2">Step 1: Make your payment</p>
+                    <div class="space-y-2 text-gray-600">
+                        <p>Bank: <span class="font-bold text-gray-800">Zenith Bank</span></p>
+                        <p>Account Name: <span class="font-bold text-gray-800">Ask Our Doctor Concept</span></p>
+                        <p>Account Number: <span class="font-bold text-gray-800">1312266685</span></p>
+                    </div>
+                </div>
+
+                <!-- Contact Buttons -->
+                <div class="text-center">
+                    <p class="font-bold text-gray-800 mb-4">Step 2: Send your receipt to schedule your time</p>
+                    <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                        <a href="https://wa.me/2349059645425?text=Hello%20Dr.%20Kelechi,%20I%20just%20used%20your%20R.H.Y.T.H.M.%20Simulator.%20I%20have%20made%20my%20payment%20and%20would%20like%20to%20book%20my%20consultation.%20Here%20is%20my%20receipt:" target="_blank" onclick="stopCriticalAlarm()" class="w-full sm:w-auto inline-flex items-center justify-center bg-[#25D366] hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-200 transform hover:scale-105">
+                            Send Receipt via WhatsApp
+                        </a>
+                        <a href="https://m.me/aodconcept?text=Hello%20Dr.%20Kelechi,%20I%20just%20used%20your%20R.H.Y.T.H.M.%20Simulator.%20I%20have%20made%20my%20payment%20and%20would%20like%20to%20book%20my%20consultation.%20Here%20is%20my%20receipt:" target="_blank" onclick="stopCriticalAlarm()" class="w-full sm:w-auto inline-flex items-center justify-center bg-[#0084FF] hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-200 transform hover:scale-105">
+                            Send Receipt via Messenger
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentZone = 'green';
+        let audioCtx;
+        let criticalAlarmInterval = null;
+        let isAutoEnvironment = false, isAutoPacing = false, isAutoHydration = false;
+        let micAudioCtx, audioStream, motionAccumulator = 0, motionReadings = 0, motionInterval = null, hydrationInterval = null;
+
+        function showError(msg) {
+            const statusAlert = document.getElementById('statusAlert');
+            statusAlert.className = 'mb-8 p-4 rounded-lg bg-red-100 border border-red-300 text-red-900 text-center text-sm font-bold transition-colors duration-300';
+            statusAlert.innerHTML = `⚠️ ${msg}`;
+            setTimeout(() => calculateThreshold(), 3500);
+        }
+
+        async function toggleAutoNoise() {
+            const btn = document.getElementById('btnAutoNoise');
+            if (isAutoEnvironment) {
+                isAutoEnvironment = false;
+                btn.classList.replace('bg-blue-600', 'bg-gray-200');
+                btn.classList.replace('text-white', 'text-gray-600');
+                btn.innerText = 'Auto';
+                if (audioStream) audioStream.getTracks().forEach(track => track.stop());
+                return;
+            }
+            try {
+                audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                micAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const source = micAudioCtx.createMediaStreamSource(audioStream);
+                const analyser = micAudioCtx.createAnalyser();
+                analyser.fftSize = 256;
+                source.connect(analyser);
+                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                isAutoEnvironment = true;
+                btn.classList.replace('bg-gray-200', 'bg-blue-600');
+                btn.classList.replace('text-gray-600', 'text-white');
+                btn.innerText = 'Auto ON';
+                function updateNoise() {
+                    if (!isAutoEnvironment) return;
+                    analyser.getByteFrequencyData(dataArray);
+                    let avg = dataArray.reduce((a,b)=>a+b,0) / dataArray.length;
+                    document.getElementById('slideM').value = Math.min(20, Math.floor((avg / 80) * 20));
+                    calculateThreshold();
+                    setTimeout(updateNoise, 1000); 
+                }
+                updateNoise();
+            } catch (err) { showError("Microphone access denied."); }
+        }
+
+        async function toggleAutoMotion() {
+            const btn = document.getElementById('btnAutoMotion');
+            if (isAutoPacing) {
+                isAutoPacing = false;
+                btn.classList.replace('bg-blue-600', 'bg-gray-200');
+                btn.classList.replace('text-white', 'text-gray-600');
+                btn.innerText = 'Auto';
+                window.removeEventListener('devicemotion', handleMotion);
+                if (motionInterval) clearInterval(motionInterval);
+                return;
+            }
+            if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+                try {
+                    const permission = await DeviceMotionEvent.requestPermission();
+                    if (permission !== 'granted') throw new Error();
+                } catch (e) { showError("Motion sensor access denied."); return; }
+            }
+            isAutoPacing = true;
+            btn.classList.replace('bg-gray-200', 'bg-blue-600');
+            btn.classList.replace('text-gray-600', 'text-white');
+            btn.innerText = 'Auto ON';
+            window.addEventListener('devicemotion', handleMotion);
+            motionInterval = setInterval(() => {
+                if (!isAutoPacing) return;
+                let sliderVal = Math.min(20, Math.floor((motionReadings > 0 ? (motionAccumulator / motionReadings) : 0 / 10) * 20));
+                document.getElementById('slideP').value = sliderVal;
+                calculateThreshold();
+                motionAccumulator = 0; motionReadings = 0;
+            }, 1000);
+        }
+
+        function handleMotion(event) {
+            if (!isAutoPacing) return;
+            let acc = event.acceleration || event.accelerationIncludingGravity;
+            if (acc) {
+                let mag = Math.sqrt((acc.x||0)**2 + (acc.y||0)**2 + (acc.z||0)**2);
+                motionAccumulator += event.acceleration ? mag : Math.abs(mag - 9.8);
+                motionReadings++;
+            }
+        }
+
+        function toggleAutoHydration() {
+            const btn = document.getElementById('btnAutoHydration');
+            if (isAutoHydration) {
+                isAutoHydration = false;
+                btn.classList.replace('bg-blue-600', 'bg-gray-200');
+                btn.classList.replace('text-white', 'text-gray-600');
+                btn.innerText = 'Auto';
+                document.getElementById('btnDrink').classList.add('hidden');
+                if (hydrationInterval) clearInterval(hydrationInterval);
+                return;
+            }
+            isAutoHydration = true;
+            btn.classList.replace('bg-gray-200', 'bg-blue-600');
+            btn.classList.replace('text-gray-600', 'text-white');
+            btn.innerText = 'Auto ON';
+            document.getElementById('btnDrink').classList.remove('hidden');
+            hydrationInterval = setInterval(() => {
+                if (!isAutoHydration) return;
+                const s = document.getElementById('slideH');
+                if (parseInt(s.value) < 20) { s.value = parseInt(s.value) + 1; calculateThreshold(); }
+            }, 1800000);
+        }
+
+        function drinkWater() {
+            if (!isAutoHydration) return;
+            document.getElementById('slideH').value = 0;
+            calculateThreshold();
+        }
+
+        function manualOverride(id) {
+            if (id === 'slideM' && isAutoEnvironment) toggleAutoNoise();
+            if (id === 'slideP' && isAutoPacing) toggleAutoMotion();
+            if (id === 'slideH' && isAutoHydration) toggleAutoHydration();
+        }
+
+        function startCriticalAlarm() {
+            if (!criticalAlarmInterval) { playAlarm('critical'); criticalAlarmInterval = setInterval(() => playAlarm('critical'), 1000); }
+        }
+
+        function stopCriticalAlarm() {
+            if (criticalAlarmInterval) { clearInterval(criticalAlarmInterval); criticalAlarmInterval = null; }
+        }
+
+        function playAlarm(type) {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            if (type === 'warning') {
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.setTargetAtTime(0, audioCtx.currentTime + 0.1, 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            } else {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(1000, audioCtx.currentTime + 0.2);
+                gain.gain.setTargetAtTime(0, audioCtx.currentTime + 0.3, 0.05);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+            }
+        }
+
+        function calculateThreshold() {
+            const r = parseInt(document.getElementById('slideR').value),
+                  h = parseInt(document.getElementById('slideH').value),
+                  t = parseInt(document.getElementById('slideT').value),
+                  p = parseInt(document.getElementById('slideP').value),
+                  m = parseInt(document.getElementById('slideM').value);
+            document.getElementById('valR').innerText = r < 7 ? "Perfect" : r < 14 ? "Moderate" : "Erratic";
+            document.getElementById('valH').innerText = h < 7 ? "Optimal" : h < 14 ? "Moderate" : "Dehydrated";
+            document.getElementById('valT').innerText = t < 7 ? "Relaxed" : t < 14 ? "Moderate Strain" : "High Strain";
+            document.getElementById('valP').innerText = p < 7 ? "Paced" : p < 14 ? "Moderate Push" : "Overexerted";
+            document.getElementById('valM').innerText = m < 7 ? "Protected" : m < 14 ? "Irritated" : "Overwhelmed";
+            let total = Math.max(5, r + h + t + p + m);
+            document.getElementById('meterBar').style.width = total + '%';
+            let newZone = total >= 70 ? 'red' : (total >= 40 ? 'yellow' : 'green');
+            if (newZone !== currentZone) {
+                if (currentZone === 'red' && newZone !== 'red') stopCriticalAlarm();
+                if (newZone === 'yellow' && currentZone === 'green') playAlarm('warning');
+                else if (newZone === 'red') startCriticalAlarm();
+                currentZone = newZone;
+            }
+            const sA = document.getElementById('statusAlert');
+            if (!sA.innerHTML.includes('⚠️ Microphone') && !sA.innerHTML.includes('⚠️ Motion')) {
+                if (total >= 70) {
+                    document.getElementById('meterBar').className = 'h-full bg-red-500 transition-all duration-500 ease-in-out';
+                    sA.className = 'mb-8 p-4 rounded-lg bg-red-50 border border-red-200 text-red-800 text-center text-lg font-extrabold transition-colors duration-300 animate-pulse';
+                    sA.innerHTML = '⚠️ Threshold Crossed! Consult with Dr. Kel Now!';
+                } else if (total >= 40) {
+                    document.getElementById('meterBar').className = 'h-full bg-yellow-400 transition-all duration-500 ease-in-out';
+                    sA.className = 'mb-8 p-4 rounded-lg bg-yellow-50 border border-yellow-200 text-yellow-800 text-center text-sm font-bold transition-colors duration-300';
+                    sA.innerHTML = 'Caution: Triggers are accumulating. Stabilize your routine to prevent an attack.';
+                } else {
+                    document.getElementById('meterBar').className = 'h-full bg-green-500 transition-all duration-500 ease-in-out';
+                    sA.className = 'mb-8 p-4 rounded-lg bg-green-50 border border-green-200 text-green-800 text-center text-sm font-medium transition-colors duration-300';
+                    sA.innerHTML = 'Your brain is currently in the protected zone. Keep up the good R.H.Y.T.H.M.!';
+                }
+            }
+        }
+    </script>
